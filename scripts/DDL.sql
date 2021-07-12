@@ -2,19 +2,23 @@
 
 -- Drop table
 
--- DROP TABLE ecommerce.customers;
-
 CREATE TABLE ecommerce.customers (
-	first_name varchar NOT NULL,
-	last_name varchar NOT NULL,
-	phon_number varchar NULL,
-	customer_id int4 NOT NULL,
-	email varchar NOT NULL,
-	country_code varchar NULL,
+	first_name varchar(50) NOT NULL,
+	last_name varchar(50) NOT NULL,
+	phon_number varchar(25) NULL,
+	customer_id serial NOT NULL,
+	email varchar(50) NOT NULL,
+	country_code varchar(10) NULL,
 	city_id int4 NULL,
 	CONSTRAINT customers_pk PRIMARY KEY (customer_id),
 	CONSTRAINT customers_un UNIQUE (email)
 );
+
+
+-- ecommerce.customers foreign keys
+
+ALTER TABLE ecommerce.customers ADD CONSTRAINT customers_fk FOREIGN KEY (country_id) REFERENCES ecommerce.country(country_id);
+ALTER TABLE ecommerce.customers ADD CONSTRAINT customers_fkcity FOREIGN KEY (city_id) REFERENCES ecommerce.city(city_id) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- ecommerce.product definition
 
@@ -39,18 +43,13 @@ CREATE TABLE ecommerce.product (
 -- DROP TABLE ecommerce.stock;
 
 CREATE TABLE ecommerce.stock (
-	stock_id int4 NOT NULL,
+	stock_id serial NOT NULL,
 	stock_size int4 NOT NULL,
 	last_updated_time timestamp NOT NULL DEFAULT now(),
 	product_id int4 NULL,
-	CONSTRAINT stock_pk PRIMARY KEY (stock_id)
+	CONSTRAINT stock_pk PRIMARY KEY (stock_id),
+	CONSTRAINT stock_fk FOREIGN KEY (stock_id) REFERENCES ecommerce.product(producti_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-
--- ecommerce.stock foreign keys
-
-ALTER TABLE ecommerce.stock ADD CONSTRAINT stock_fk FOREIGN KEY (stock_id) REFERENCES ecommerce.product(producti_id) ON DELETE CASCADE ON UPDATE CASCADE;
-
 
 -- ecommerce.country definition
 
@@ -59,11 +58,9 @@ ALTER TABLE ecommerce.stock ADD CONSTRAINT stock_fk FOREIGN KEY (stock_id) REFER
 -- DROP TABLE ecommerce.country;
 
 CREATE TABLE ecommerce.country (
-	country_id int4 NOT NULL,
-	country_name varchar NOT NULL,
-	country_code varchar NOT NULL,
+	country_id serial NOT NULL,
+	country_name varchar(25) NOT NULL,
 	CONSTRAINT country_pk PRIMARY KEY (country_id),
-	CONSTRAINT country_un UNIQUE (country_code)
 );
 
 
@@ -74,8 +71,8 @@ CREATE TABLE ecommerce.country (
 -- DROP TABLE ecommerce.city;
 
 CREATE TABLE ecommerce.city (
-	city_id int4 NOT NULL,
-	city_name varchar NOT NULL,
+	city_id serial NOT NULL,
+	city_name varchar(20) NOT NULL,
 	country_id int4 NULL,
 	CONSTRAINT city_pk PRIMARY KEY (city_id)
 );
@@ -93,12 +90,12 @@ ALTER TABLE ecommerce.city ADD CONSTRAINT city_fk FOREIGN KEY (country_id) REFER
 -- DROP TABLE ecommerce.category;
 
 CREATE TABLE ecommerce.category (
-	category_id int4 NOT NULL,
-	"name" varchar NOT NULL,
-	product_code varchar NOT NULL,
+	category_id serial NOT NULL,
+	category_name varchar(50) NOT NULL,
+	product_code varchar(20) NOT NULL,
 	parent_category_id int4 NULL,
 	CONSTRAINT category_pk PRIMARY KEY (category_id),
-	CONSTRAINT category_un UNIQUE (name),
+	CONSTRAINT category_un UNIQUE (category_name),
 	CONSTRAINT category_fk FOREIGN KEY (parent_category_id) REFERENCES ecommerce.category(category_id)
 );
 
