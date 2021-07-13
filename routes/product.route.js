@@ -2,12 +2,12 @@ const route = require('express').Router();
 const {Product} = require('../controllers/product.control');
 
 
-route.get('/products', async (req, res) => {
-    Product.getproducts(req, res);
-});
+route.get('/products', Product.getproducts);
 
-route.post('/product', (req, res) => {
-    Product.creatproduct(req, res);
-})
+route.post('/product', Product.creatproduct);
+
+route.put('/product/:id', Product.updateProduct);
+
+route.delete('/product/:id', Product.deleteProduct);
 
 module.exports = route;

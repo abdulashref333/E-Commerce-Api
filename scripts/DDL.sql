@@ -27,15 +27,17 @@ ALTER TABLE ecommerce.customers ADD CONSTRAINT customers_fkcity FOREIGN KEY (cit
 -- DROP TABLE ecommerce.product;
 
 CREATE TABLE ecommerce.product (
-	producti_id serial NOT NULL,
+	product_id serial NOT NULL,
 	product_name varchar NULL,
 	unit bpchar(1) NOT NULL,
 	price_per_unit int4 NOT NULL,
-	category_id int4 NOT NULL,
 	description text NULL,
-	CONSTRAINT product_pk PRIMARY KEY (producti_id)
+	product_code varchar(25) NOT NULL,
+	category_id int4 NOT NULL,
+	CONSTRAINT product_pk PRIMARY KEY (producti_id),
+	CONSTRAINT product_un UNIQUE (product_code),
+	CONSTRAINT product_fk FOREIGN KEY (category_id) REFERENCES ecommerce.category(category_id)
 );
-
 -- ecommerce.stock definition
 
 -- Drop table
@@ -89,14 +91,18 @@ ALTER TABLE ecommerce.city ADD CONSTRAINT city_fk FOREIGN KEY (country_id) REFER
 
 -- DROP TABLE ecommerce.category;
 
+-- ecommerce.category definition
+
+-- Drop table
+
+-- DROP TABLE ecommerce.category;
+
 CREATE TABLE ecommerce.category (
 	category_id serial NOT NULL,
 	category_name varchar(50) NOT NULL,
-	product_code varchar(20) NOT NULL,
 	parent_category_id int4 NULL,
 	CONSTRAINT category_pk PRIMARY KEY (category_id),
-	CONSTRAINT category_un UNIQUE (category_name),
-	CONSTRAINT category_fk FOREIGN KEY (parent_category_id) REFERENCES ecommerce.category(category_id)
+	CONSTRAINT category_un UNIQUE (category_name)
 );
 
 -- ecommerce.attachments_files definition
