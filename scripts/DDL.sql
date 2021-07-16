@@ -8,18 +8,15 @@ CREATE TABLE ecommerce.customers (
 	phon_number varchar(25) NULL,
 	customer_id serial NOT NULL,
 	email varchar(50) NOT NULL,
-	country_code varchar(10) NULL,
+	country_id int4 NULL,
 	city_id int4 NULL,
+	"password" varchar(150) NOT NULL,
+	"role" varchar(20) NULL,
 	CONSTRAINT customers_pk PRIMARY KEY (customer_id),
-	CONSTRAINT customers_un UNIQUE (email)
+	CONSTRAINT customers_un UNIQUE (email),
+	CONSTRAINT customers_fk FOREIGN KEY (country_id) REFERENCES ecommerce.country(country_id),
+	CONSTRAINT customers_fkcity FOREIGN KEY (city_id) REFERENCES ecommerce.city(city_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-
--- ecommerce.customers foreign keys
-
-ALTER TABLE ecommerce.customers ADD CONSTRAINT customers_fk FOREIGN KEY (country_id) REFERENCES ecommerce.country(country_id);
-ALTER TABLE ecommerce.customers ADD CONSTRAINT customers_fkcity FOREIGN KEY (city_id) REFERENCES ecommerce.city(city_id) ON DELETE CASCADE ON UPDATE CASCADE;
-
 -- ecommerce.product definition
 
 -- Drop table
