@@ -2,29 +2,29 @@ const db = require('../db');
 const {Queries} = require('../db/queries');
 const jwt = require('../util/jwt');
 const bcrypt = require('bcrypt');
+const {Api401Error, Api404Error} = require('../models/errors/errors');
 
 module.exports = {
 
 
-    signIn: async(req, res) => {
+    signIn: async(req, res, next) => {
         try {
 
             const {email, password} = req.body;
             if(!email || !password){
-                throw new Error({error:'username and password are wrong.'});
+                throw new Api404Error({error:'username and password are wrong.'});
             }
 
-            
             const result = await db.query(Queries.LOGIN_QUERY, [email]);
             const dbresult = result.rows[0];
             
             if(dbresult == null){
-                return res.status(401).send({error: 'username or password are wrong'});
+                throw new Api401Error( 'username or password are wrong')
             }
 
             const isValidPass = await bcrypt.compare(password, dbresult.password);
             if(!isValidPass){
-                return res.status(401).send({error: 'username or password are wrong'});
+                throw new Api401Error( 'username or password are wrong')
             }
 
             const token = jwt.generateToken({
@@ -36,7 +36,7 @@ module.exports = {
             res.send(JSON.stringify(token));
             
         } catch (error) {
-            res.status(500).send({error});
+            next(error);
         }
     }
     
