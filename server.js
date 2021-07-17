@@ -1,12 +1,9 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const app = express();
+const app = require('./app');
+const http = require('http');
+
 const port = process.env.PORT || 3000;
-const customerRoutes = require('./routes/customer.route');
-const productRoutes = require('./routes/product.route');
-const categoryRoutes = require('./routes/category.route');
-const autheRoutes = require('./routes/authenticat.route');
-const {logErrorMiddleware, returnError, logError, isOperationalError} = require('./util/errorHandler');
+app.set('port', port)
+app.set('secPort', port+433);
 
 process.on('uncaughtException', err => {
     logError(err);
@@ -19,15 +16,24 @@ process.on('unhandledRejection', err => {
     throw err;
 })
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
-app.use('/api/v1/', autheRoutes);
-app.use('/api/v1', customerRoutes);
-app.use('/api/v1', productRoutes);
-app.use('/api/v1', categoryRoutes);
-app.use(logErrorMiddleware);
-app.use(returnError);
-
-app.listen(port, () => {
+const server = http.createServer(app);
+server.listen(app.get('port'), () => {
     console.log(`http://localhost:${port}/`);
 })
+
+// setup https
+// start..
+const https = require('https');
+const fs = require('fs');
+const options = {
+    key: fs.readFileSync(__dirname+'/private.key'),
+    cert: fs.readFileSync(__dirname+'/certificate.pem')
+};
+const secureServer = https.createServer(options, app);
+secureServer.listen(app.get('secPort'), () => {
+    console.log('Secure Server listining ...');
+});
+
+secureServer.on('error', console.error);
+secureServer.on('listening', console.log);
+//end setup
